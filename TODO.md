@@ -79,29 +79,29 @@
 
 ### 3.1 通用组件
 
-- [ ] 创建自定义 AppBar (`lib/widgets/custom_app_bar.dart`)
+- [x] 创建自定义 AppBar (`lib/widgets/custom_app_bar.dart`) ✅ 2024-07-17
   - 渐变背景
   - 标题和返回按钮
-- [ ] 创建日记卡片组件 (`lib/widgets/diary_card.dart`)
+- [x] 创建日记卡片组件 (`lib/widgets/diary_card.dart`) ✅ 2024-07-17
   - 日记预览
   - 标签显示
   - 点击交互
-- [ ] 创建标签组件 (`lib/widgets/tag_widget.dart`)
+- [x] 创建标签组件 (`lib/widgets/tag_widget.dart`) ✅ 2024-07-17
   - 标签显示
   - 标签输入
   - 标签选择
-- [ ] 创建浮动按钮 (`lib/widgets/fab_button.dart`)
+- [x] 创建浮动按钮 (`lib/widgets/fab_button.dart`) ✅ 2024-07-17
   - 添加日记按钮
   - 渐变效果
 
 ### 3.2 表单组件
 
-- [ ] 创建日记表单 (`lib/widgets/diary_form.dart`)
+- [x] 创建日记表单 (`lib/widgets/diary_form.dart`) ✅ 2024-07-17
   - 标题输入
   - 内容输入
   - 标签选择
   - 日期选择
-- [ ] 创建搜索栏 (`lib/widgets/search_bar.dart`)
+- [x] 创建搜索栏 (`lib/widgets/search_bar.dart`) ✅ 2024-07-17
   - 搜索输入
   - 筛选选项
 

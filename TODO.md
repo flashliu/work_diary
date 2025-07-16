@@ -24,22 +24,22 @@
 
 ### 1.2 数据模型设计
 
-- [ ] 创建 `DiaryEntry` 模型 (`lib/models/diary_entry.dart`)
+- [x] 创建 `DiaryEntry` 模型 (`lib/models/diary_entry.dart`) ✅ 2024-07-17
   - id, title, content, date, tags, createdAt, updatedAt
-- [ ] 创建 `Tag` 模型 (`lib/models/tag.dart`)
+- [x] 创建 `Tag` 模型 (`lib/models/tag.dart`) ✅ 2024-07-17
   - id, name, color, createdAt
-- [ ] 创建 `Statistics` 模型 (`lib/models/statistics.dart`)
+- [x] 创建 `Statistics` 模型 (`lib/models/statistics.dart`) ✅ 2024-07-17
   - 统计相关数据结构
 
 ### 1.3 数据库服务
 
-- [ ] 创建数据库助手类 (`lib/services/database_helper.dart`)
+- [x] 创建数据库助手类 (`lib/services/database_helper.dart`) ✅ 2024-07-17
   - 数据库初始化和版本管理
   - 创建表结构
-- [ ] 实现日记数据操作 (`lib/services/diary_service.dart`)
+- [x] 实现日记数据操作 (`lib/services/diary_service.dart`) ✅ 2024-07-17
   - CRUD 操作
   - 搜索和筛选功能
-- [ ] 实现标签数据操作 (`lib/services/tag_service.dart`)
+- [x] 实现标签数据操作 (`lib/services/tag_service.dart`) ✅ 2024-07-17
   - 标签的增删改查
   - 标签使用统计
 

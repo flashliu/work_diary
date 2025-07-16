@@ -4,6 +4,12 @@ class Statistics {
   final int totalTags;
   final int entriesThisWeek;
   final int entriesThisMonth;
+  final int? todayEntries;
+  final int? totalWords;
+  final double? averageWords;
+  final int? writingStreak;
+  final int? writingDays;
+  final DateTime? createdAt;
   final Map<String, int> tagUsage;
   final Map<String, int> dailyEntries;
   final Map<String, int> weeklyEntries;
@@ -14,6 +20,12 @@ class Statistics {
     required this.totalTags,
     required this.entriesThisWeek,
     required this.entriesThisMonth,
+    this.todayEntries,
+    this.totalWords,
+    this.averageWords,
+    this.writingStreak,
+    this.writingDays,
+    this.createdAt,
     required this.tagUsage,
     required this.dailyEntries,
     required this.weeklyEntries,
@@ -27,6 +39,14 @@ class Statistics {
       totalTags: map['total_tags'] ?? 0,
       entriesThisWeek: map['entries_this_week'] ?? 0,
       entriesThisMonth: map['entries_this_month'] ?? 0,
+      todayEntries: map['today_entries'],
+      totalWords: map['total_words'],
+      averageWords: map['average_words']?.toDouble(),
+      writingStreak: map['writing_streak'],
+      writingDays: map['writing_days'],
+      createdAt: map['created_at'] != null
+          ? DateTime.parse(map['created_at'])
+          : null,
       tagUsage: Map<String, int>.from(map['tag_usage'] ?? {}),
       dailyEntries: Map<String, int>.from(map['daily_entries'] ?? {}),
       weeklyEntries: Map<String, int>.from(map['weekly_entries'] ?? {}),
@@ -41,6 +61,12 @@ class Statistics {
       'total_tags': totalTags,
       'entries_this_week': entriesThisWeek,
       'entries_this_month': entriesThisMonth,
+      'today_entries': todayEntries,
+      'total_words': totalWords,
+      'average_words': averageWords,
+      'writing_streak': writingStreak,
+      'writing_days': writingDays,
+      'created_at': createdAt?.toIso8601String(),
       'tag_usage': tagUsage,
       'daily_entries': dailyEntries,
       'weekly_entries': weeklyEntries,

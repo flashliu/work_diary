@@ -49,26 +49,26 @@
 
 ### 2.1 状态管理设置
 
-- [ ] 创建日记状态管理 (`lib/providers/diary_provider.dart`)
+- [x] 创建日记状态管理 (`lib/providers/diary_provider.dart`) ✅ 2024-07-17
   - 日记列表状态
   - 当前选中日记
   - 筛选和搜索状态
-- [ ] 创建标签状态管理 (`lib/providers/tag_provider.dart`)
+- [x] 创建标签状态管理 (`lib/providers/tag_provider.dart`) ✅ 2024-07-17
   - 标签列表状态
   - 标签选择状态
-- [ ] 创建应用状态管理 (`lib/providers/app_provider.dart`)
+- [x] 创建应用状态管理 (`lib/providers/app_provider.dart`) ✅ 2024-07-17
   - 主题设置
   - 用户偏好设置
 
 ### 2.2 工具类和常量
 
-- [ ] 创建日期工具类 (`lib/utils/date_utils.dart`)
+- [x] 创建日期工具类 (`lib/utils/date_utils.dart`) ✅ 2024-07-17
   - 日期格式化
   - 日期计算
-- [ ] 创建导出工具类 (`lib/utils/export_utils.dart`)
+- [x] 创建导出工具类 (`lib/utils/export_utils.dart`) ✅ 2024-07-17
   - PDF 导出
   - Excel 导出
-- [ ] 创建常量文件 (`lib/constants/app_constants.dart`)
+- [x] 创建常量文件 (`lib/constants/app_constants.dart`) ✅ 2024-07-17
   - 颜色常量
   - 文本常量
   - 配置常量

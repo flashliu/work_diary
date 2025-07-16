@@ -1,6 +1,10 @@
 import 'package:sqflite/sqflite.dart';
 import '../models/statistics.dart';
+import '../models/diary_entry.dart';
 import 'database_helper.dart';
+import 'diary_service.dart';
+import 'tag_service.dart';
+import '../utils/date_utils.dart';
 
 /// 统计服务
 /// 负责生成各种统计数据和分析报告
@@ -10,6 +14,8 @@ class StatisticsService {
   StatisticsService._internal();
 
   final DatabaseHelper _databaseHelper = DatabaseHelper();
+  final DiaryService _diaryService = DiaryService();
+  final TagService _tagService = TagService();
 
   /// 获取完整的统计数据
   Future<Statistics> getCompleteStatistics() async {
@@ -39,6 +45,60 @@ class StatisticsService {
       dailyEntries: dailyEntries,
       weeklyEntries: weeklyEntries,
       monthlyEntries: monthlyEntries,
+    );
+  }
+
+  /// 获取基本统计信息
+  Future<Statistics> getBasicStatistics() async {
+    final allDiaries = await _diaryService.getAllDiaries();
+    final allTags = await _tagService.getAllTags();
+    final now = DateTime.now();
+
+    // 计算本月日记数
+    final thisMonth = allDiaries.where((diary) {
+      return DateUtils.isSameMonth(diary.date, now);
+    }).length;
+
+    // 计算本周日记数
+    final thisWeek = allDiaries.where((diary) {
+      return DateUtils.isThisWeek(diary.date);
+    }).length;
+
+    // 计算今日日记数
+    final today = allDiaries.where((diary) {
+      return DateUtils.isToday(diary.date);
+    }).length;
+
+    // 计算总字数
+    final totalWords = allDiaries.fold<int>(0, (sum, diary) {
+      return sum + diary.content.length + diary.title.length;
+    });
+
+    // 计算平均字数
+    final averageWords = allDiaries.isNotEmpty
+        ? totalWords / allDiaries.length
+        : 0.0;
+
+    // 计算连续写作天数
+    final writingStreak = _calculateWritingStreak(allDiaries);
+
+    // 计算写作天数
+    final writingDays = _calculateWritingDays(allDiaries);
+
+    return Statistics(
+      totalEntries: allDiaries.length,
+      totalTags: allTags.length,
+      entriesThisWeek: thisWeek,
+      entriesThisMonth: thisMonth,
+      todayEntries: today,
+      totalWords: totalWords,
+      averageWords: averageWords,
+      writingStreak: writingStreak,
+      writingDays: writingDays,
+      tagUsage: {},
+      dailyEntries: {},
+      weeklyEntries: {},
+      monthlyEntries: {},
     );
   }
 
@@ -90,6 +150,56 @@ class StatisticsService {
       'entriesThisWeek': entriesThisWeek,
       'entriesThisMonth': entriesThisMonth,
     };
+  }
+
+  /// 计算当前连续写作天数
+  int _calculateWritingStreak(List<DiaryEntry> diaries) {
+    if (diaries.isEmpty) return 0;
+
+    final sortedDiaries = List<DiaryEntry>.from(diaries)
+      ..sort((a, b) => b.date.compareTo(a.date));
+
+    final today = DateTime.now();
+    int streak = 0;
+
+    // 检查今天是否有写作
+    if (DateUtils.isToday(sortedDiaries.first.date)) {
+      streak = 1;
+    } else {
+      // 如果昨天有写作，则从昨天开始计算
+      final yesterday = today.subtract(const Duration(days: 1));
+      if (DateUtils.isSameDay(sortedDiaries.first.date, yesterday)) {
+        streak = 1;
+      } else {
+        return 0;
+      }
+    }
+
+    // 向前计算连续天数
+    DateTime expectedDate = sortedDiaries.first.date.subtract(
+      const Duration(days: 1),
+    );
+
+    for (int i = 1; i < sortedDiaries.length; i++) {
+      if (DateUtils.isSameDay(sortedDiaries[i].date, expectedDate)) {
+        streak++;
+        expectedDate = expectedDate.subtract(const Duration(days: 1));
+      } else {
+        break;
+      }
+    }
+
+    return streak;
+  }
+
+  /// 计算总写作天数
+  int _calculateWritingDays(List<DiaryEntry> diaries) {
+    if (diaries.isEmpty) return 0;
+
+    final uniqueDates = diaries
+        .map((diary) => DateUtils.formatDate(diary.date))
+        .toSet();
+    return uniqueDates.length;
   }
 
   /// 获取标签使用统计

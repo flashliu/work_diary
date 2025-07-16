@@ -1,6 +1,198 @@
-// 颜色常量
+// 应用常量
 import 'package:flutter/material.dart';
 
+/// 应用常量类
+/// 包含颜色常量、文本常量、配置常量等
+class AppConstants {
+  // 私有构造函数，防止实例化
+  AppConstants._();
+
+  // =========================== 颜色常量 ===========================
+
+  /// 主色调渐变
+  static const LinearGradient primaryGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [Color(0xFF667EEA), Color(0xFF764BA2)],
+  );
+
+  /// 标签颜色列表
+  static const List<Color> tagColors = [
+    Color(0xFF667EEA), // 蓝色
+    Color(0xFF764BA2), // 紫色
+    Color(0xFF4ECDC4), // 青色
+    Color(0xFF96CEB4), // 绿色
+    Color(0xFFFFEAA7), // 黄色
+    Color(0xFFFF6B6B), // 红色
+    Color(0xFFFFB347), // 橙色
+    Color(0xFFDDA0DD), // 紫罗兰色
+    Color(0xFF87CEEB), // 天蓝色
+    Color(0xFF98FB98), // 浅绿色
+    Color(0xFFF0E68C), // 卡其色
+    Color(0xFFDEB887), // 棕色
+  ];
+
+  // =========================== 文本常量 ===========================
+
+  /// 应用名称
+  static const String appName = '工作日记';
+  static const String appSubtitle = '记录每一天的工作成长';
+
+  /// 页面标题
+  static const String homeTitle = '首页';
+  static const String addDiaryTitle = '添加日记';
+  static const String editDiaryTitle = '编辑日记';
+  static const String diaryDetailTitle = '日记详情';
+  static const String calendarTitle = '日历';
+  static const String statisticsTitle = '统计';
+  static const String exportTitle = '导出';
+  static const String profileTitle = '个人中心';
+  static const String settingsTitle = '设置';
+  static const String tagsTitle = '标签管理';
+
+  /// 按钮文本
+  static const String saveButton = '保存';
+  static const String cancelButton = '取消';
+  static const String deleteButton = '删除';
+  static const String editButton = '编辑';
+  static const String addButton = '添加';
+  static const String exportButton = '导出';
+  static const String shareButton = '分享';
+  static const String searchButton = '搜索';
+  static const String filterButton = '筛选';
+  static const String sortButton = '排序';
+  static const String confirmButton = '确认';
+
+  /// 输入框提示文本
+  static const String titleHint = '请输入日记标题';
+  static const String contentHint = '请输入日记内容';
+  static const String notesHint = '请输入备注';
+  static const String tagHint = '请输入标签';
+  static const String searchHint = '搜索日记';
+
+  /// 空状态文本
+  static const String emptyDiaryList = '暂无日记记录\n点击右下角按钮添加第一篇日记';
+  static const String emptySearchResult = '未找到相关日记';
+  static const String emptyTagList = '暂无标签';
+
+  /// 错误提示文本
+  static const String networkError = '网络连接失败，请检查网络设置';
+  static const String serverError = '服务器错误，请稍后重试';
+  static const String unknownError = '未知错误，请联系客服';
+  static const String exportError = '导出失败';
+
+  /// 成功提示文本
+  static const String saveSuccess = '保存成功';
+  static const String deleteSuccess = '删除成功';
+  static const String exportSuccess = '导出成功';
+
+  // =========================== 配置常量 ===========================
+
+  /// 分页配置
+  static const int pageSize = 20;
+
+  /// 内容配置
+  static const int maxTitleLength = 100;
+  static const int maxContentLength = 10000;
+  static const int maxNotesLength = 500;
+  static const int maxTagLength = 20;
+  static const int maxTagsPerEntry = 10;
+
+  /// 动画配置
+  static const Duration shortAnimationDuration = Duration(milliseconds: 200);
+  static const Duration mediumAnimationDuration = Duration(milliseconds: 300);
+  static const Duration longAnimationDuration = Duration(milliseconds: 500);
+
+  // =========================== 尺寸常量 ===========================
+
+  /// 边距
+  static const double smallMargin = 8.0;
+  static const double mediumMargin = 16.0;
+  static const double largeMargin = 24.0;
+
+  /// 圆角
+  static const double smallRadius = 8.0;
+  static const double mediumRadius = 12.0;
+  static const double largeRadius = 16.0;
+
+  /// 高度
+  static const double buttonHeight = 48.0;
+  static const double inputHeight = 56.0;
+  static const double cardHeight = 120.0;
+  static const double fabSize = 56.0;
+
+  // =========================== 图标常量 ===========================
+
+  /// 导航图标
+  static const IconData homeIcon = Icons.home;
+  static const IconData calendarIcon = Icons.calendar_today;
+  static const IconData statisticsIcon = Icons.bar_chart;
+  static const IconData profileIcon = Icons.person;
+
+  /// 操作图标
+  static const IconData addIcon = Icons.add;
+  static const IconData editIcon = Icons.edit;
+  static const IconData deleteIcon = Icons.delete;
+  static const IconData saveIcon = Icons.save;
+  static const IconData shareIcon = Icons.share;
+  static const IconData exportIcon = Icons.download;
+  static const IconData searchIcon = Icons.search;
+  static const IconData filterIcon = Icons.filter_list;
+  static const IconData sortIcon = Icons.sort;
+  static const IconData settingsIcon = Icons.settings;
+  static const IconData backIcon = Icons.arrow_back;
+  static const IconData tagIcon = Icons.local_offer;
+
+  // =========================== 工具方法 ===========================
+
+  /// 获取随机标签颜色
+  static Color getRandomTagColor() {
+    return tagColors[(DateTime.now().millisecondsSinceEpoch %
+        tagColors.length)];
+  }
+
+  /// 获取对比色（用于在彩色背景上显示文本）
+  static Color getContrastColor(Color backgroundColor) {
+    // 计算颜色的亮度
+    final brightness =
+        ((backgroundColor.r * 255.0).round() * 299 +
+            (backgroundColor.g * 255.0).round() * 587 +
+            (backgroundColor.b * 255.0).round() * 114) /
+        (255 * 1000);
+
+    // 根据亮度返回黑色或白色
+    return brightness > 0.5 ? Colors.black : Colors.white;
+  }
+
+  /// 截断文本
+  static String truncateText(String text, int maxLength) {
+    if (text.length <= maxLength) {
+      return text;
+    }
+    return '${text.substring(0, maxLength)}...';
+  }
+
+  /// 验证输入
+  static bool isValidInput(String? value, {int? minLength, int? maxLength}) {
+    if (value == null || value.trim().isEmpty) {
+      return false;
+    }
+
+    final trimmed = value.trim();
+
+    if (minLength != null && trimmed.length < minLength) {
+      return false;
+    }
+
+    if (maxLength != null && trimmed.length > maxLength) {
+      return false;
+    }
+
+    return true;
+  }
+}
+
+/// 保持向后兼容的颜色类
 class AppColors {
   // 主色调 - 紫蓝色渐变
   static const Color primary = Color(0xFF667eea);

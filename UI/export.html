@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>导出日记 - 工作日记</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .export-card {
+            transition: all 0.3s ease;
+        }
+
+        .export-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .export-card.selected {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+
+        .export-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+
+        .export-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .export-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .checkbox-custom {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #d1d5db;
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .checkbox-custom:checked {
+            background: #3b82f6;
+            border-color: #3b82f6;
+        }
+
+        .checkbox-custom:checked::after {
+            content: '\2713';
+            position: absolute;
+            top: 1px;
+            left: 3px;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <button class="p-2 hover:bg-white/20 rounded-full transition-colors mr-2">
+                        <i class="fas fa-arrow-left text-lg"></i>
+                    </button>
+                    <div>
+                        <h1 class="text-xl font-bold">导出日记</h1>
+                        <p class="text-blue-100 text-sm">选择导出格式和内容</p>
+                    </div>
+                </div>
+                <div class="p-2">
+                    <i class="fas fa-download text-2xl opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Export Options -->
+    <div class="px-6 py-6 pb-24">
+        <!-- Format Selection -->
+        <div class="mb-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-4">选择导出格式</h3>
+            <div class="grid grid-cols-2 gap-4">
+                <div
+                    class="export-card selected bg-white p-4 rounded-xl shadow-sm border-2 border-blue-500 cursor-pointer">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-file-word text-blue-600 text-xl"></i>
+                        </div>
+                        <div class="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-check text-white text-xs"></i>
+                        </div>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 mb-1">Word 文档</h4>
+                    <p class="text-sm text-gray-600">导出为 .docx 格式</p>
+                    <div class="mt-2 text-xs text-blue-600">推荐格式</div>
+                </div>
+
+                <div class="export-card bg-white p-4 rounded-xl shadow-sm border-2 border-gray-200 cursor-pointer">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-file-excel text-green-600 text-xl"></i>
+                        </div>
+                        <div class="w-5 h-5 border-2 border-gray-300 rounded-full"></div>
+                    </div>
+                    <h4 class="font-semibold text-gray-800 mb-1">Excel 表格</h4>
+                    <p class="text-sm text-gray-600">导出为 .xlsx 格式</p>
+                    <div class="mt-2 text-xs text-gray-500">适合数据分析</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Date Range -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 mb-6">
+            <div class="flex items-center mb-4">
+                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                    <i class="fas fa-calendar-alt text-blue-600 text-sm"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-800">选择时间范围</h3>
+            </div>
+            <div class="space-y-4">
+                <div class="flex items-center space-x-4">
+                    <input type="radio" id="all-time" name="date-range" class="w-4 h-4 text-blue-600" checked>
+                    <label for="all-time" class="text-gray-700">全部时间</label>
+                    <span class="text-sm text-gray-500">(156 条记录)</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <input type="radio" id="this-month" name="date-range" class="w-4 h-4 text-blue-600">
+                    <label for="this-month" class="text-gray-700">本月</label>
+                    <span class="text-sm text-gray-500">(23 条记录)</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <input type="radio" id="last-month" name="date-range" class="w-4 h-4 text-blue-600">
+                    <label for="last-month" class="text-gray-700">上月</label>
+                    <span class="text-sm text-gray-500">(28 条记录)</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <input type="radio" id="custom-range" name="date-range" class="w-4 h-4 text-blue-600">
+                    <label for="custom-range" class="text-gray-700">自定义范围</label>
+                </div>
+                <div class="grid grid-cols-2 gap-4 ml-8 opacity-50">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">开始日期</label>
+                        <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" disabled>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">结束日期</label>
+                        <input type="date" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" disabled>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Options -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 mb-6">
+            <div class="flex items-center mb-4">
+                <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mr-3">
+                    <i class="fas fa-list-check text-green-600 text-sm"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-800">导出内容</h3>
+            </div>
+            <div class="space-y-4">
+                <div class="flex items-center space-x-3">
+                    <input type="checkbox" class="checkbox-custom" checked>
+                    <label class="text-gray-700">日期信息</label>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <input type="checkbox" class="checkbox-custom" checked>
+                    <label class="text-gray-700">工作内容</label>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <input type="checkbox" class="checkbox-custom" checked>
+                    <label class="text-gray-700">标签</label>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <input type="checkbox" class="checkbox-custom" checked>
+                    <label class="text-gray-700">备注</label>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <input type="checkbox" class="checkbox-custom">
+                    <label class="text-gray-700">创建时间</label>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <input type="checkbox" class="checkbox-custom">
+                    <label class="text-gray-700">修改时间</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Settings -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 mb-6">
+            <div class="flex items-center mb-4">
+                <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center mr-3">
+                    <i class="fas fa-cog text-purple-600 text-sm"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-800">导出设置</h3>
+            </div>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <label class="text-gray-700">按日期排序</label>
+                    <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                        <option>最新优先</option>
+                        <option>最早优先</option>
+                    </select>
+                </div>
+                <div class="flex items-center justify-between">
+                    <label class="text-gray-700">分页设置</label>
+                    <select class="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                        <option>不分页</option>
+                        <option>每页20条</option>
+                        <option>每页50条</option>
+                    </select>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <input type="checkbox" class="checkbox-custom" checked>
+                    <label class="text-gray-700">包含封面页</label>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <input type="checkbox" class="checkbox-custom">
+                    <label class="text-gray-700">包含统计信息</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Progress (Hidden by default) -->
+        <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 mb-6 hidden" id="export-progress">
+            <div class="flex items-center mb-4">
+                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                    <i class="fas fa-download text-blue-600 text-sm"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-800">导出进度</h3>
+            </div>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between text-sm">
+                    <span class="text-gray-600">正在生成文件...</span>
+                    <span class="text-blue-600">完成</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="progress-bar bg-blue-500 h-2 rounded-full" style="width: 100%"></div>
+                </div>
+                <p class="text-xs text-gray-500">文件已生成，即将开始下载</p>
+            </div>
+        </div>
+
+        <!-- Export Button -->
+        <div class="space-y-4">
+            <button class="export-button w-full py-4 text-white rounded-xl font-semibold text-lg">
+                <i class="fas fa-download mr-2"></i>
+                开始导出 (156 条记录)
+            </button>
+            <div class="flex items-center justify-center space-x-4 text-sm text-gray-500">
+                <div class="flex items-center">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    <span>预计文件大小: 2.3MB</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-clock mr-1"></i>
+                    <span>预计用时: 5秒</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-2">
+        <div class="flex justify-around">
+            <button class="flex flex-col items-center py-2 text-gray-400">
+                <i class="fas fa-home text-lg mb-1"></i>
+                <span class="text-xs">首页</span>
+            </button>
+            <button class="flex flex-col items-center py-2 text-gray-400">
+                <i class="fas fa-calendar text-lg mb-1"></i>
+                <span class="text-xs">日历</span>
+            </button>
+            <button class="flex flex-col items-center py-2 text-gray-400">
+                <i class="fas fa-chart-bar text-lg mb-1"></i>
+                <span class="text-xs">统计</span>
+            </button>
+            <button class="flex flex-col items-center py-2 text-gray-400">
+                <i class="fas fa-user text-lg mb-1"></i>
+                <span class="text-xs">我的</span>
+            </button>
+        </div>
+    </nav>
+</body>
+
+</html>

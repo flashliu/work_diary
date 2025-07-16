@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>统计分析 - 工作日记</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .stat-card {
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .chart-bar {
+            background: linear-gradient(to top, #3b82f6, #60a5fa);
+            border-radius: 4px 4px 0 0;
+            transition: all 0.3s ease;
+        }
+
+        .tag-stat {
+            transition: all 0.3s ease;
+        }
+
+        .tag-stat:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+    <!-- Header -->
+    <header class="gradient-bg text-white shadow-lg">
+        <div class="px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-xl font-bold">统计分析</h1>
+                    <p class="text-blue-100 text-sm">工作记录数据分析</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button class="p-2 hover:bg-white/20 rounded-full transition-colors">
+                        <i class="fas fa-filter text-lg"></i>
+                    </button>
+                    <button class="p-2 hover:bg-white/20 rounded-full transition-colors">
+                        <i class="fas fa-download text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Time Filter -->
+    <div class="px-6 py-4 bg-white shadow-sm">
+        <div class="flex space-x-2">
+            <button class="px-4 py-2 bg-blue-500 text-white rounded-lg text-sm font-medium">
+                本月
+            </button>
+            <button class="px-4 py-2 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-50">
+                本周
+            </button>
+            <button class="px-4 py-2 text-gray-600 rounded-lg text-sm font-medium hover:bg-gray-50">
+                本年
+            </button>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="px-6 py-6 pb-24">
+        <!-- Overview Stats -->
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="stat-card bg-white rounded-xl shadow-sm p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-edit text-blue-600"></i>
+                    </div>
+                    <span class="text-green-500 text-sm">+12%</span>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold text-gray-800">156</p>
+                    <p class="text-sm text-gray-600">总日记数</p>
+                </div>
+            </div>
+            <div class="stat-card bg-white rounded-xl shadow-sm p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-calendar-check text-green-600"></i>
+                    </div>
+                    <span class="text-green-500 text-sm">+8%</span>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold text-gray-800">23</p>
+                    <p class="text-sm text-gray-600">本月记录</p>
+                </div>
+            </div>
+            <div class="stat-card bg-white rounded-xl shadow-sm p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-fire text-purple-600"></i>
+                    </div>
+                    <span class="text-green-500 text-sm">新记录</span>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold text-gray-800">7</p>
+                    <p class="text-sm text-gray-600">连续天数</p>
+                </div>
+            </div>
+            <div class="stat-card bg-white rounded-xl shadow-sm p-4">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+                        <i class="fas fa-chart-line text-orange-600"></i>
+                    </div>
+                    <span class="text-gray-500 text-sm">本月</span>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold text-gray-800">74%</p>
+                    <p class="text-sm text-gray-600">完成率</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weekly Chart -->
+        <div class="stat-card bg-white rounded-xl shadow-sm p-6 mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-800">本周记录趋势</h3>
+                <button class="text-blue-500 text-sm">查看详情</button>
+            </div>
+            <div class="flex items-end justify-between h-32 mb-4">
+                <div class="flex flex-col items-center">
+                    <div class="chart-bar w-6 mb-2" style="height: 60%"></div>
+                    <span class="text-xs text-gray-500">周一</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="chart-bar w-6 mb-2" style="height: 80%"></div>
+                    <span class="text-xs text-gray-500">周二</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="chart-bar w-6 mb-2" style="height: 40%"></div>
+                    <span class="text-xs text-gray-500">周三</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="chart-bar w-6 mb-2" style="height: 90%"></div>
+                    <span class="text-xs text-gray-500">周四</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="chart-bar w-6 mb-2" style="height: 70%"></div>
+                    <span class="text-xs text-gray-500">周五</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="chart-bar w-6 mb-2" style="height: 30%"></div>
+                    <span class="text-xs text-gray-500">周六</span>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="chart-bar w-6 mb-2" style="height: 20%"></div>
+                    <span class="text-xs text-gray-500">周日</span>
+                </div>
+            </div>
+            <div class="text-center text-sm text-gray-600">
+                平均每天 <span class="font-semibold text-blue-600">2.3</span> 条记录
+            </div>
+        </div>
+
+        <!-- Tag Statistics -->
+        <div class="stat-card bg-white rounded-xl shadow-sm p-6 mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-800">标签使用统计</h3>
+                <button class="text-blue-500 text-sm">查看全部</button>
+            </div>
+            <div class="space-y-4">
+                <div class="tag-stat">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <span class="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs mr-2">开发</span>
+                            <span class="text-sm text-gray-600">42次</span>
+                        </div>
+                        <span class="text-sm font-medium text-gray-800">27%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill bg-blue-500" style="width: 42%"></div>
+                    </div>
+                </div>
+                <div class="tag-stat">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <span class="px-2 py-1 bg-green-100 text-green-700 rounded-full text-xs mr-2">设计</span>
+                            <span class="text-sm text-gray-600">35次</span>
+                        </div>
+                        <span class="text-sm font-medium text-gray-800">22%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill bg-green-500" style="width: 35%"></div>
+                    </div>
+                </div>
+                <div class="tag-stat">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <span class="px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs mr-2">会议</span>
+                            <span class="text-sm text-gray-600">28次</span>
+                        </div>
+                        <span class="text-sm font-medium text-gray-800">18%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill bg-purple-500" style="width: 28%"></div>
+                    </div>
+                </div>
+                <div class="tag-stat">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="flex items-center">
+                            <span class="px-2 py-1 bg-orange-100 text-orange-700 rounded-full text-xs mr-2">测试</span>
+                            <span class="text-sm text-gray-600">23次</span>
+                        </div>
+                        <span class="text-sm font-medium text-gray-800">15%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill bg-orange-500" style="width: 23%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Work Time Stats -->
+        <div class="stat-card bg-white rounded-xl shadow-sm p-6 mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold text-gray-800">工作时间分析</h3>
+                <button class="text-blue-500 text-sm">设置提醒</button>
+            </div>
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center">
+                        <i class="fas fa-sun text-yellow-500 mr-3"></i>
+                        <div>
+                            <p class="font-medium text-gray-800">上午 (9:00-12:00)</p>
+                            <p class="text-sm text-gray-600">45条记录</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-lg font-bold text-gray-800">29%</p>
+                        <p class="text-xs text-gray-500">最活跃</p>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center">
+                        <i class="fas fa-sun text-orange-500 mr-3"></i>
+                        <div>
+                            <p class="font-medium text-gray-800">下午 (14:00-18:00)</p>
+                            <p class="text-sm text-gray-600">38条记录</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-lg font-bold text-gray-800">24%</p>
+                        <p class="text-xs text-gray-500">次活跃</p>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center">
+                        <i class="fas fa-moon text-blue-500 mr-3"></i>
+                        <div>
+                            <p class="font-medium text-gray-800">晚上 (19:00-22:00)</p>
+                            <p class="text-sm text-gray-600">23条记录</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-lg font-bold text-gray-800">15%</p>
+                        <p class="text-xs text-gray-500">较少</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Achievement -->
+        <div class="stat-card bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl shadow-sm p-6 text-white">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-semibold">本月成就</h3>
+                <i class="fas fa-trophy text-yellow-300 text-2xl"></i>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-2">
+                        <i class="fas fa-calendar-check text-white"></i>
+                    </div>
+                    <p class="text-sm opacity-90">连续记录</p>
+                    <p class="text-xl font-bold">7天</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-2">
+                        <i class="fas fa-chart-line text-white"></i>
+                    </div>
+                    <p class="text-sm opacity-90">记录增长</p>
+                    <p class="text-xl font-bold">+12%</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-6 py-2">
+        <div class="flex justify-around">
+            <button class="flex flex-col items-center py-2 text-gray-400">
+                <i class="fas fa-home text-lg mb-1"></i>
+                <span class="text-xs">首页</span>
+            </button>
+            <button class="flex flex-col items-center py-2 text-gray-400">
+                <i class="fas fa-calendar text-lg mb-1"></i>
+                <span class="text-xs">日历</span>
+            </button>
+            <button class="flex flex-col items-center py-2 text-blue-600">
+                <i class="fas fa-chart-bar text-lg mb-1"></i>
+                <span class="text-xs">统计</span>
+            </button>
+            <button class="flex flex-col items-center py-2 text-gray-400">
+                <i class="fas fa-user text-lg mb-1"></i>
+                <span class="text-xs">我的</span>
+            </button>
+        </div>
+    </nav>
+</body>
+
+</html>

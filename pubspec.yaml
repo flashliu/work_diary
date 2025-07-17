@@ -46,6 +46,12 @@ dependencies:
   # 日期时间处理
   intl: ^0.20.0
 
+  # 日历组件
+  table_calendar: ^3.2.0
+
+  # 图表组件
+  fl_chart: ^1.0.0
+
   # 文档导出
   pdf: ^3.10.7
   open_file: ^3.3.2
@@ -56,12 +62,6 @@ dependencies:
 
   # 图标
   font_awesome_flutter: ^10.6.0
-
-  # 表格组件
-  table_calendar: ^3.2.0
-
-  # 图表
-  fl_chart: ^1.0.0
 
   # Excel 导出
   excel: ^4.0.1

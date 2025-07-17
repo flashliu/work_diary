@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import '../models/diary_entry.dart';
 import '../services/diary_service.dart';
 
+/// 日记筛选类型
+enum DiaryFilterType { all, thisWeek, thisMonth }
+
 /// 日记状态管理类
 /// 负责管理日记列表、当前选中日记、筛选和搜索状态
 class DiaryProvider extends ChangeNotifier {
@@ -18,6 +21,7 @@ class DiaryProvider extends ChangeNotifier {
   String _searchQuery = '';
   List<String> _selectedTags = [];
   DateTimeRange? _dateRange;
+  DiaryFilterType _filterType = DiaryFilterType.all;
 
   // 加载状态
   bool _isLoading = false;
@@ -33,6 +37,7 @@ class DiaryProvider extends ChangeNotifier {
   String get searchQuery => _searchQuery;
   List<String> get selectedTags => _selectedTags;
   DateTimeRange? get dateRange => _dateRange;
+  DiaryFilterType get filterType => _filterType;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   DiarySort get sortBy => _sortBy;
@@ -196,6 +201,29 @@ class DiaryProvider extends ChangeNotifier {
   void _applyFilters() {
     _filteredEntries = List.from(_diaryEntries);
 
+    // 应用时间筛选
+    switch (_filterType) {
+      case DiaryFilterType.thisWeek:
+        final now = DateTime.now();
+        final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
+        final endOfWeek = startOfWeek.add(const Duration(days: 6));
+        _filteredEntries = _filteredEntries.where((entry) {
+          return entry.date.isAfter(
+                startOfWeek.subtract(const Duration(days: 1)),
+              ) &&
+              entry.date.isBefore(endOfWeek.add(const Duration(days: 1)));
+        }).toList();
+        break;
+      case DiaryFilterType.thisMonth:
+        final now = DateTime.now();
+        _filteredEntries = _filteredEntries.where((entry) {
+          return entry.date.year == now.year && entry.date.month == now.month;
+        }).toList();
+        break;
+      case DiaryFilterType.all:
+        break;
+    }
+
     // 应用搜索
     if (_searchQuery.isNotEmpty) {
       _filteredEntries = _filteredEntries.where((entry) {
@@ -319,6 +347,20 @@ class DiaryProvider extends ChangeNotifier {
         1;
 
     return months > 0 ? months : 1;
+  }
+
+  /// 设置筛选类型
+  void setFilterType(DiaryFilterType filterType) {
+    _filterType = filterType;
+    _applyFilters();
+    notifyListeners();
+  }
+
+  /// 搜索日记
+  void searchDiaries(String query) {
+    _searchQuery = query;
+    _applyFilters();
+    notifyListeners();
   }
 }
 

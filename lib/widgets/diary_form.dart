@@ -210,7 +210,7 @@ class _DiaryFormState extends State<DiaryForm> {
                       const Icon(Icons.today, size: 20),
                       const SizedBox(width: 8),
                       Text(
-                        DateFormat('EEEE', 'zh_CN').format(_selectedDate),
+                        _getWeekdayString(_selectedDate),
                         style: const TextStyle(fontSize: 16),
                       ),
                     ],
@@ -396,6 +396,11 @@ class _DiaryFormState extends State<DiaryForm> {
         ),
       ],
     );
+  }
+
+  String _getWeekdayString(DateTime date) {
+    final weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+    return weekdays[date.weekday % 7];
   }
 }
 

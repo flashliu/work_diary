@@ -242,8 +242,13 @@ class _DiaryCardState extends State<DiaryCard>
     } else if (difference <= 7) {
       return '$difference天前';
     } else {
-      return DateFormat('yyyy年MM月dd日 EEEE', 'zh_CN').format(date);
+      return '${DateFormat('yyyy年MM月dd日').format(date)} ${_getWeekdayString(date)}';
     }
+  }
+
+  static String _getWeekdayString(DateTime date) {
+    final weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+    return weekdays[date.weekday % 7];
   }
 }
 

@@ -236,6 +236,7 @@ class AppColors {
   // 边框色
   static const Color border = Color(0xFFE5E7EB);
   static const Color borderLight = Color(0xFFF3F4F6);
+  static const Color divider = Color(0xFFE5E7EB);
 
   // 阴影色
   static const Color shadow = Color(0x0F000000);

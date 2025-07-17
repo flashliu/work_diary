@@ -13,8 +13,6 @@ class DateUtils {
   static final DateFormat _displayDateTimeFormat = DateFormat('M月d日 HH:mm');
   static final DateFormat _displayMonthFormat = DateFormat('yyyy年M月');
   static final DateFormat _displayYearFormat = DateFormat('yyyy年');
-  static final DateFormat _weekdayFormat = DateFormat('EEEE', 'zh_CN');
-  static final DateFormat _shortWeekdayFormat = DateFormat('E', 'zh_CN');
 
   /// 格式化日期为字符串 (yyyy-MM-dd)
   static String formatDate(DateTime date) {
@@ -63,12 +61,12 @@ class DateUtils {
 
   /// 格式化星期几 (星期一)
   static String formatWeekday(DateTime date) {
-    return _weekdayFormat.format(date);
+    return _getWeekdayString(date);
   }
 
   /// 格式化星期几 (周一)
   static String formatShortWeekday(DateTime date) {
-    return _shortWeekdayFormat.format(date);
+    return _getShortWeekdayString(date);
   }
 
   /// 格式化相对时间 (今天、昨天、N天前等)
@@ -373,5 +371,17 @@ class DateUtils {
     }
 
     return parts.join(' ');
+  }
+
+  /// 获取中文星期几字符串
+  static String _getWeekdayString(DateTime date) {
+    final weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+    return weekdays[date.weekday % 7];
+  }
+
+  /// 获取中文短星期几字符串
+  static String _getShortWeekdayString(DateTime date) {
+    final weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+    return '周${weekdays[date.weekday % 7]}';
   }
 }

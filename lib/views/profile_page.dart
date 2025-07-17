@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/diary_provider.dart';
 import '../providers/tag_provider.dart';
 import '../widgets/custom_app_bar.dart';
+import '../widgets/theme_settings.dart';
 import '../constants/app_constants.dart';
 
 /// 个人中心页面
@@ -509,16 +510,7 @@ class ProfilePage extends StatelessWidget {
   void _showThemeDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('主题设置'),
-        content: const Text('主题设置功能开发中...'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('确定'),
-          ),
-        ],
-      ),
+      builder: (context) => const ThemeSettingsDialog(),
     );
   }
 

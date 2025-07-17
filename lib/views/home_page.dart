@@ -7,6 +7,9 @@ import '../widgets/diary_card.dart';
 import '../widgets/fab_button.dart';
 import '../models/diary_entry.dart';
 import '../constants/app_constants.dart';
+import '../animations/common_animations.dart';
+import '../animations/page_transitions.dart';
+import '../animations/loading_animations.dart';
 import 'add_diary_page.dart';
 import 'diary_detail_page.dart';
 import 'calendar_page.dart';
@@ -101,10 +104,7 @@ class _HomePageState extends State<HomePage>
   }
 
   void _navigateToAddDiary(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const AddDiaryPage()),
-    );
+    Navigator.push(context, const AddDiaryPage().slideUpTransition());
   }
 }
 
@@ -322,58 +322,64 @@ class _HomeContent extends StatelessWidget {
 
   Widget _buildDiaryList(BuildContext context, DiaryProvider diaryProvider) {
     if (diaryProvider.isLoading) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(
+        child: LoadingAnimation(type: LoadingType.dots, text: '加载中...'),
+      );
     }
 
     if (diaryProvider.errorMessage != null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.error_outline,
-              size: 64,
-              color: AppColors.error.withValues(alpha: 0.5),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              diaryProvider.errorMessage!,
-              style: const TextStyle(
-                fontSize: 16,
-                color: AppColors.textSecondary,
+      return FadeInAnimation(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.error_outline,
+                size: 64,
+                color: AppColors.error.withValues(alpha: 0.5),
               ),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => diaryProvider.loadDiaryEntries(),
-              child: const Text('重试'),
-            ),
-          ],
+              const SizedBox(height: 16),
+              Text(
+                diaryProvider.errorMessage!,
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () => diaryProvider.loadDiaryEntries(),
+                child: const Text('重试'),
+              ),
+            ],
+          ),
         ),
       );
     }
 
     if (diaryProvider.diaryEntries.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.note_add,
-              size: 64,
-              color: AppColors.textSecondary.withValues(alpha: 0.5),
-            ),
-            const SizedBox(height: 16),
-            const Text(
-              '还没有日记记录',
-              style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              '点击右下角按钮开始记录',
-              style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
-            ),
-          ],
+      return FadeInAnimation(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.note_add,
+                size: 64,
+                color: AppColors.textSecondary.withValues(alpha: 0.5),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                '还没有日记记录',
+                style: TextStyle(fontSize: 16, color: AppColors.textSecondary),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                '点击右下角按钮开始记录',
+                style: TextStyle(fontSize: 14, color: AppColors.textSecondary),
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -385,12 +391,15 @@ class _HomeContent extends StatelessWidget {
         itemCount: diaryProvider.diaryEntries.length,
         itemBuilder: (context, index) {
           final diary = diaryProvider.diaryEntries[index];
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: DiaryCard(
-              diary: diary,
-              onTap: () => _navigateToDiaryDetail(context, diary),
-              onMorePressed: () => _showDiaryOptions(context, diary),
+          return ListItemAnimation(
+            index: index,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 16),
+              child: DiaryCard(
+                diary: diary,
+                onTap: () => _navigateToDiaryDetail(context, diary),
+                onMorePressed: () => _showDiaryOptions(context, diary),
+              ),
             ),
           );
         },
@@ -399,10 +408,7 @@ class _HomeContent extends StatelessWidget {
   }
 
   void _navigateToDiaryDetail(BuildContext context, DiaryEntry diary) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => DiaryDetailPage(diary: diary)),
-    );
+    Navigator.push(context, DiaryDetailPage(diary: diary).slideTransition());
   }
 
   void _showDiaryOptions(BuildContext context, DiaryEntry diary) {
@@ -484,17 +490,11 @@ class _HomeContent extends StatelessWidget {
   }
 
   void _showSearch(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const SearchPage()),
-    );
+    Navigator.push(context, const SearchPage().fadeTransition());
   }
 
   void _navigateToExportPage(BuildContext context) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => const ExportPage()),
-    );
+    Navigator.push(context, const ExportPage().slideTransition());
   }
 
   void _shareDiary(BuildContext context, DiaryEntry diary) {

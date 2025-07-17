@@ -23,7 +23,9 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (context) => DiaryProvider()),
         ChangeNotifierProvider(create: (context) => TagProvider()),
-        ChangeNotifierProvider(create: (context) => AppProvider()),
+        ChangeNotifierProvider(
+          create: (context) => AppProvider()..initialize(),
+        ),
       ],
       child: Consumer<AppProvider>(
         builder: (context, appProvider, child) {
@@ -36,26 +38,9 @@ class MyApp extends StatelessWidget {
               GlobalCupertinoLocalizations.delegate,
             ],
             supportedLocales: const [Locale('zh', 'CN')],
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-              primaryColor: AppColors.primary,
-              scaffoldBackgroundColor: AppColors.background,
-              fontFamily: 'PingFang SC',
-              appBarTheme: const AppBarTheme(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                elevation: 0,
-              ),
-              elevatedButtonTheme: ElevatedButtonThemeData(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(AppRadius.md),
-                  ),
-                ),
-              ),
-            ),
+            theme: appProvider.lightTheme,
+            darkTheme: appProvider.darkTheme,
+            themeMode: appProvider.themeMode,
             home: const HomePage(),
             debugShowCheckedModeBanner: false,
           );

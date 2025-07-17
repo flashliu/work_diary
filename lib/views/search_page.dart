@@ -75,13 +75,23 @@ class _SearchPageState extends State<SearchPage> {
                               .toList(),
                           initialFilters: _currentFilters,
                           onResultsChanged: (results) {
-                            setState(() {
-                              _searchResults = results;
+                            // 使用 WidgetsBinding.instance.addPostFrameCallback 确保在构建完成后更新状态
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (mounted) {
+                                setState(() {
+                                  _searchResults = results;
+                                });
+                              }
                             });
                           },
                           onFiltersChanged: (filters) {
-                            setState(() {
-                              _currentFilters = filters;
+                            // 使用 WidgetsBinding.instance.addPostFrameCallback 确保在构建完成后更新状态
+                            WidgetsBinding.instance.addPostFrameCallback((_) {
+                              if (mounted) {
+                                setState(() {
+                                  _currentFilters = filters;
+                                });
+                              }
                             });
                           },
                         ),
@@ -170,9 +180,13 @@ class _SearchPageState extends State<SearchPage> {
 
   /// 清除筛选条件
   void _clearFilters() {
-    setState(() {
-      _currentFilters = const AdvancedFilterOptions();
-      _searchResults = context.read<DiaryProvider>().diaryEntries;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {
+          _currentFilters = const AdvancedFilterOptions();
+          _searchResults = context.read<DiaryProvider>().diaryEntries;
+        });
+      }
     });
   }
 

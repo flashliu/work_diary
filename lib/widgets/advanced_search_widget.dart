@@ -56,8 +56,11 @@ class _AdvancedSearchWidgetState extends State<AdvancedSearchWidget> {
       filters: _currentFilters,
     );
 
-    widget.onResultsChanged?.call(_filteredResults);
-    widget.onFiltersChanged?.call(_currentFilters);
+    // 使用 WidgetsBinding.instance.addPostFrameCallback 确保回调在构建完成后执行
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      widget.onResultsChanged?.call(_filteredResults);
+      widget.onFiltersChanged?.call(_currentFilters);
+    });
   }
 
   /// 更新关键词

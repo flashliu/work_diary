@@ -55,16 +55,75 @@ class FileShareService {
         throw Exception('文件不存在');
       }
 
-      // 使用平台特定的分享方法
-      if (Platform.isAndroid) {
-        await _shareOnAndroid(filePath, subject: subject, text: text);
-      } else if (Platform.isIOS) {
-        await _shareOnIOS(filePath, subject: subject, text: text);
-      } else {
-        throw UnsupportedError('当前平台不支持文件分享');
-      }
+      // 使用 share_plus 进行跨平台分享
+      final xFile = XFile(filePath);
+      await Share.shareXFiles(
+        [xFile],
+        subject: subject ?? '工作日记导出文件',
+        text: text ?? '这是我导出的工作日记文件，请查收。',
+      );
     } catch (e) {
       debugPrint('Share file error: $e');
+      rethrow;
+    }
+  }
+
+  /// 分享多个文件
+  ///
+  /// [filePaths] 文件路径列表
+  /// [subject] 分享主题
+  /// [text] 分享文本
+  Future<void> shareMultipleFiles(
+    List<String> filePaths, {
+    String? subject,
+    String? text,
+  }) async {
+    try {
+      final files = <XFile>[];
+      for (final filePath in filePaths) {
+        final file = File(filePath);
+        if (await file.exists()) {
+          files.add(XFile(filePath));
+        }
+      }
+
+      if (files.isEmpty) {
+        throw Exception('没有有效的文件可分享');
+      }
+
+      await Share.shareXFiles(
+        files,
+        subject: subject ?? '工作日记导出文件',
+        text: text ?? '这是我导出的工作日记文件，请查收。',
+      );
+    } catch (e) {
+      debugPrint('Share multiple files error: $e');
+      rethrow;
+    }
+  }
+
+  /// 分享文本内容
+  ///
+  /// [text] 文本内容
+  /// [subject] 分享主题
+  Future<void> shareText(String text, {String? subject}) async {
+    try {
+      await Share.share(text, subject: subject ?? '工作日记内容分享');
+    } catch (e) {
+      debugPrint('Share text error: $e');
+      rethrow;
+    }
+  }
+
+  /// 分享链接
+  ///
+  /// [url] 链接地址
+  /// [subject] 分享主题
+  Future<void> shareUrl(String url, {String? subject}) async {
+    try {
+      await Share.shareUri(Uri.parse(url));
+    } catch (e) {
+      debugPrint('Share URL error: $e');
       rethrow;
     }
   }
@@ -153,36 +212,6 @@ class FileShareService {
   /// 从路径中提取文件名
   String _getFileNameFromPath(String filePath) {
     return File(filePath).path.split('/').last;
-  }
-
-  /// Android 平台分享文件
-  Future<void> _shareOnAndroid(
-    String filePath, {
-    String? subject,
-    String? text,
-  }) async {
-    try {
-      // 使用share_plus包进行文件分享
-      await Share.shareXFiles([XFile(filePath)], subject: subject, text: text);
-    } catch (e) {
-      debugPrint('Android文件分享失败: $e');
-      rethrow;
-    }
-  }
-
-  /// iOS 平台分享文件
-  Future<void> _shareOnIOS(
-    String filePath, {
-    String? subject,
-    String? text,
-  }) async {
-    try {
-      // 使用share_plus包进行文件分享
-      await Share.shareXFiles([XFile(filePath)], subject: subject, text: text);
-    } catch (e) {
-      debugPrint('iOS文件分享失败: $e');
-      rethrow;
-    }
   }
 
   /// Android 平台打开目录

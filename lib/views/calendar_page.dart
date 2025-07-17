@@ -22,14 +22,10 @@ class CalendarPage extends StatefulWidget {
 class _CalendarPageState extends State<CalendarPage> {
   DateTime _selectedDay = DateTime.now();
   DateTime _focusedDay = DateTime.now();
-  List<DiaryEntry> _selectedDayEntries = [];
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadSelectedDayEntries();
-    });
   }
 
   @override
@@ -156,7 +152,6 @@ class _CalendarPageState extends State<CalendarPage> {
             _selectedDay = selectedDay;
             _focusedDay = focusedDay;
           });
-          _loadSelectedDayEntries();
         },
         onPageChanged: (focusedDay) {
           setState(() {
@@ -168,6 +163,8 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
   Widget _buildDayDiaryList(DiaryProvider diaryProvider) {
+    final selectedDayEntries = diaryProvider.getEntriesByDate(_selectedDay);
+
     return Container(
       color: AppColors.background,
       child: Column(
@@ -220,7 +217,7 @@ class _CalendarPageState extends State<CalendarPage> {
                   ),
                 ),
                 Text(
-                  '${_selectedDayEntries.length}篇日记',
+                  '${selectedDayEntries.length}篇日记',
                   style: const TextStyle(
                     fontSize: 12,
                     color: AppColors.textSecondary,
@@ -232,13 +229,13 @@ class _CalendarPageState extends State<CalendarPage> {
 
           // 日记列表
           Expanded(
-            child: _selectedDayEntries.isEmpty
+            child: selectedDayEntries.isEmpty
                 ? _buildEmptyState()
                 : ListView.builder(
                     padding: const EdgeInsets.all(16),
-                    itemCount: _selectedDayEntries.length,
+                    itemCount: selectedDayEntries.length,
                     itemBuilder: (context, index) {
-                      final diary = _selectedDayEntries[index];
+                      final diary = selectedDayEntries[index];
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 16),
                         child: DiaryCard(
@@ -289,16 +286,6 @@ class _CalendarPageState extends State<CalendarPage> {
     return entries.where((entry) {
       return isSameDay(entry.date, day);
     }).toList();
-  }
-
-  void _loadSelectedDayEntries() {
-    final diaryProvider = context.read<DiaryProvider>();
-    setState(() {
-      _selectedDayEntries = _getEventsForDay(
-        _selectedDay,
-        diaryProvider.allEntries,
-      );
-    });
   }
 
   void _navigateToDiaryDetail(BuildContext context, DiaryEntry diary) {

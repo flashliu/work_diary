@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../constants/app_constants.dart';
 
 /// 应用状态管理类
 /// 负责管理主题设置、用户偏好设置等全局状态
@@ -21,7 +22,7 @@ class AppProvider extends ChangeNotifier {
   DiaryListViewType _listViewType = DiaryListViewType.card;
 
   // 导出设置
-  ExportFormat _defaultExportFormat = ExportFormat.pdf;
+  ExportFormat _defaultExportFormat = ExportFormat.word;
   bool _includeTagsInExport = true;
   bool _includeNotesInExport = true;
 
@@ -327,7 +328,7 @@ class AppProvider extends ChangeNotifier {
     _showWelcomeScreen = true;
     _showHelpTips = true;
     _listViewType = DiaryListViewType.card;
-    _defaultExportFormat = ExportFormat.pdf;
+    _defaultExportFormat = ExportFormat.word;
     _includeTagsInExport = true;
     _includeNotesInExport = true;
     _enablePinLock = false;
@@ -381,7 +382,7 @@ class AppProvider extends ChangeNotifier {
     if (exportFormatString != null) {
       _defaultExportFormat = ExportFormat.values.firstWhere(
         (format) => format.name == exportFormatString,
-        orElse: () => ExportFormat.pdf,
+        orElse: () => ExportFormat.word,
       );
     }
 
@@ -427,9 +428,6 @@ class AppProvider extends ChangeNotifier {
 /// 日记列表视图类型
 enum DiaryListViewType { card, list, grid }
 
-/// 导出格式
-enum ExportFormat { pdf, excel, word, json }
-
 /// 枚举扩展
 extension DiaryListViewTypeExtension on DiaryListViewType {
   String get displayName {
@@ -458,40 +456,28 @@ extension DiaryListViewTypeExtension on DiaryListViewType {
 extension ExportFormatExtension on ExportFormat {
   String get displayName {
     switch (this) {
-      case ExportFormat.pdf:
-        return 'PDF';
       case ExportFormat.excel:
         return 'Excel';
       case ExportFormat.word:
         return 'Word';
-      case ExportFormat.json:
-        return 'JSON';
     }
   }
 
   String get fileExtension {
     switch (this) {
-      case ExportFormat.pdf:
-        return '.pdf';
       case ExportFormat.excel:
         return '.xlsx';
       case ExportFormat.word:
         return '.docx';
-      case ExportFormat.json:
-        return '.json';
     }
   }
 
   IconData get icon {
     switch (this) {
-      case ExportFormat.pdf:
-        return Icons.picture_as_pdf;
       case ExportFormat.excel:
         return Icons.table_chart;
       case ExportFormat.word:
         return Icons.description;
-      case ExportFormat.json:
-        return Icons.code;
     }
   }
 }

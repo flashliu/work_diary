@@ -7,6 +7,7 @@ import '../widgets/export/index.dart';
 import '../constants/app_constants.dart';
 import '../models/diary_entry.dart';
 import '../services/export_service.dart';
+import 'export_result_page.dart';
 
 /// 导出页面
 /// 提供多种导出格式和选项
@@ -422,14 +423,26 @@ class _ExportPageState extends State<ExportPage> {
       }
 
       // 执行简单的导出逻辑
-      await _performExport(entries);
+      final filePath = await _performExport(entries);
 
       setState(() {
         _exportStatus = ExportStatus.completed;
         _statusMessage = '导出完成！文件已保存到下载文件夹';
       });
 
-      _showSnackBar('导出成功！文件已保存');
+      // 导航到结果页面
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ExportResultPage(
+              filePath: filePath,
+              format: _selectedFormat,
+              recordCount: entries.length,
+            ),
+          ),
+        );
+      }
 
       // 3秒后重置状态
       Future.delayed(const Duration(seconds: 3), () {
@@ -463,7 +476,7 @@ class _ExportPageState extends State<ExportPage> {
   }
 
   /// 执行导出操作
-  Future<void> _performExport(List<DiaryEntry> entries) async {
+  Future<String> _performExport(List<DiaryEntry> entries) async {
     try {
       final exportService = ExportService();
 
@@ -495,6 +508,7 @@ class _ExportPageState extends State<ExportPage> {
       );
 
       debugPrint('导出完成，文件路径：$filePath');
+      return filePath;
     } catch (e) {
       debugPrint('导出失败：$e');
       rethrow;

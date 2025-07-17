@@ -24,17 +24,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
       builder: (context, diaryProvider, tagProvider, child) {
         return Column(
           children: [
-            CustomAppBar(
-              title: '统计分析',
-              subtitle: '工作日记数据统计',
-              actions: [
-                IconButton(
-                  onPressed: () => _showExportDialog(context),
-                  icon: const Icon(Icons.download, color: Colors.white),
-                  tooltip: '导出统计',
-                ),
-              ],
-            ),
+            CustomAppBar(title: '统计分析', subtitle: '工作日记数据统计'),
             Expanded(
               child: Column(
                 children: [
@@ -469,11 +459,33 @@ class _StatisticsPageState extends State<StatisticsPage> {
           ),
           const SizedBox(height: 16),
           SizedBox(
-            height: 200,
+            height: 240,
             child: LineChart(
               LineChartData(
                 gridData: FlGridData(show: false),
-                titlesData: FlTitlesData(show: false),
+                minY: 0,
+                maxY: _getMaxY(diaryProvider),
+                titlesData: FlTitlesData(
+                  show: true,
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 30,
+                      getTitlesWidget: (double value, TitleMeta meta) {
+                        return _getMonthTitle(value.toInt());
+                      },
+                    ),
+                  ),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  topTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                  rightTitles: AxisTitles(
+                    sideTitles: SideTitles(showTitles: false),
+                  ),
+                ),
                 borderData: FlBorderData(show: false),
                 lineBarsData: [
                   LineChartBarData(
@@ -600,7 +612,7 @@ class _StatisticsPageState extends State<StatisticsPage> {
           ),
           const SizedBox(height: 16),
           SizedBox(
-            height: 200,
+            height: 240,
             child: PieChart(
               PieChartData(
                 sections: _getPieChartSections(tagUsage),
@@ -707,15 +719,34 @@ class _StatisticsPageState extends State<StatisticsPage> {
   }
 
   List<FlSpot> _getMonthlySpots(DiaryProvider diaryProvider) {
-    // 简化实现，实际应该根据真实数据计算
-    return [
-      const FlSpot(0, 5),
-      const FlSpot(1, 8),
-      const FlSpot(2, 12),
-      const FlSpot(3, 15),
-      const FlSpot(4, 10),
-      const FlSpot(5, 18),
-    ];
+    final entries = diaryProvider.allEntries;
+    if (entries.isEmpty) {
+      return List.generate(6, (index) => FlSpot(index.toDouble(), 0));
+    }
+
+    // 获取最近6个月的数据
+    final now = DateTime.now();
+    final monthlyData = <int>[];
+
+    // 初始化最近6个月的数据为0（从6个月前到当前月）
+    for (int i = 5; i >= 0; i--) {
+      final month = DateTime(now.year, now.month - i, 1);
+      int count = 0;
+
+      // 统计该月的日记数量
+      for (final entry in entries) {
+        if (entry.date.year == month.year && entry.date.month == month.month) {
+          count++;
+        }
+      }
+
+      monthlyData.add(count);
+    }
+
+    // 转换为FlSpot数组
+    return monthlyData.asMap().entries.map((entry) {
+      return FlSpot(entry.key.toDouble(), entry.value.toDouble());
+    }).toList();
   }
 
   List<BarChartGroupData> _getWeeklyBarGroups(DiaryProvider diaryProvider) {
@@ -788,19 +819,39 @@ class _StatisticsPageState extends State<StatisticsPage> {
         1;
   }
 
-  void _showExportDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('导出统计'),
-        content: const Text('导出统计报告功能开发中...'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('确定'),
-          ),
-        ],
+  Widget _getMonthTitle(int index) {
+    final now = DateTime.now();
+    final month = DateTime(now.year, now.month - (5 - index), 1);
+    final monthNames = [
+      '1月',
+      '2月',
+      '3月',
+      '4月',
+      '5月',
+      '6月',
+      '7月',
+      '8月',
+      '9月',
+      '10月',
+      '11月',
+      '12月',
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 8),
+      child: Text(
+        monthNames[month.month - 1],
+        style: const TextStyle(fontSize: 12, color: AppColors.textSecondary),
       ),
     );
+  }
+
+  double _getMaxY(DiaryProvider diaryProvider) {
+    final spots = _getMonthlySpots(diaryProvider);
+    final maxValue = spots.isEmpty
+        ? 0
+        : spots.map((spot) => spot.y).reduce((a, b) => a > b ? a : b);
+    // 确保图表有合理的高度，即使所有数据都是0
+    return maxValue == 0 ? 10 : maxValue + 8;
   }
 }

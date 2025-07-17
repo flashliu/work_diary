@@ -24,11 +24,6 @@ class DiaryDetailPage extends StatelessWidget {
             ).format(diary.date),
             showBackButton: true,
             actions: [
-              IconButton(
-                onPressed: () => _showShareDialog(context),
-                icon: const Icon(Icons.share, color: Colors.white),
-                tooltip: '分享',
-              ),
               PopupMenuButton<String>(
                 icon: const Icon(Icons.more_vert, color: Colors.white),
                 onSelected: (value) => _handleMenuAction(context, value),
@@ -475,40 +470,6 @@ class DiaryDetailPage extends StatelessWidget {
               ).showSnackBar(const SnackBar(content: Text('日记已删除')));
             },
             child: const Text('删除', style: TextStyle(color: AppColors.error)),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showShareDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('分享日记'),
-        content: const Text('选择分享方式：'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('取消'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('复制到剪贴板功能开发中...')));
-            },
-            child: const Text('复制文本'),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ScaffoldMessenger.of(
-                context,
-              ).showSnackBar(const SnackBar(content: Text('系统分享功能开发中...')));
-            },
-            child: const Text('系统分享'),
           ),
         ],
       ),

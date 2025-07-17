@@ -7,7 +7,9 @@ import '../widgets/custom_app_bar.dart';
 import '../widgets/diary_card.dart';
 import '../models/diary_entry.dart';
 import '../constants/app_constants.dart';
+import '../animations/page_transitions.dart';
 import 'diary_detail_page.dart';
+import 'search_page.dart';
 
 /// 日历页面
 class CalendarPage extends StatefulWidget {
@@ -41,14 +43,9 @@ class _CalendarPageState extends State<CalendarPage> {
               subtitle: DateFormat('yyyy年MM月').format(_focusedDay),
               actions: [
                 IconButton(
-                  onPressed: () => _showSearchDialog(context),
+                  onPressed: () => _navigateToSearch(context),
                   icon: const Icon(Icons.search, color: Colors.white),
                   tooltip: '搜索',
-                ),
-                IconButton(
-                  onPressed: () => _showFilterDialog(context),
-                  icon: const Icon(Icons.filter_list, color: Colors.white),
-                  tooltip: '筛选',
                 ),
               ],
             ),
@@ -125,6 +122,7 @@ class _CalendarPageState extends State<CalendarPage> {
         eventLoader: (day) => _getEventsForDay(day, diaryProvider.allEntries),
         startingDayOfWeek: StartingDayOfWeek.monday,
         headerVisible: false,
+        locale: 'zh_CN',
         calendarStyle: CalendarStyle(
           outsideDaysVisible: false,
           weekendTextStyle: const TextStyle(color: AppColors.textSecondary),
@@ -310,36 +308,8 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   }
 
-  void _showSearchDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('搜索日记'),
-        content: const Text('搜索功能开发中...'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('确定'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _showFilterDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('筛选选项'),
-        content: const Text('筛选功能开发中...'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('确定'),
-          ),
-        ],
-      ),
-    );
+  void _navigateToSearch(BuildContext context) {
+    Navigator.push(context, const SearchPage().fadeTransition());
   }
 
   String _getWeekdayString(DateTime date) {

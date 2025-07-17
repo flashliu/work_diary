@@ -369,7 +369,7 @@ class AppConfig {
 }
 
 /// 导出格式枚举
-enum ExportFormat { word, excel, pdf, json }
+enum ExportFormat { word, excel }
 
 /// 日期范围枚举
 enum DateRange { all, thisMonth, lastMonth, thisWeek, lastWeek, custom }

@@ -429,14 +429,6 @@ class _HomeContent extends StatelessWidget {
                 },
               ),
               ListTile(
-                leading: const Icon(Icons.share),
-                title: const Text('分享'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _shareDiary(context, diary);
-                },
-              ),
-              ListTile(
                 leading: const Icon(Icons.delete, color: AppColors.error),
                 title: const Text(
                   '删除',
@@ -488,12 +480,6 @@ class _HomeContent extends StatelessWidget {
 
   void _navigateToExportPage(BuildContext context) {
     Navigator.push(context, const ExportPage().slideTransition());
-  }
-
-  void _shareDiary(BuildContext context, DiaryEntry diary) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('分享功能开发中...')));
   }
 }
 

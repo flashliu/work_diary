@@ -9,6 +9,7 @@ class DiaryCard extends StatefulWidget {
   final VoidCallback? onTap;
   final VoidCallback? onMorePressed;
   final bool showFullContent;
+  final String? highlightKeyword;
 
   const DiaryCard({
     super.key,
@@ -16,6 +17,7 @@ class DiaryCard extends StatefulWidget {
     this.onTap,
     this.onMorePressed,
     this.showFullContent = false,
+    this.highlightKeyword,
   });
 
   @override
@@ -114,7 +116,7 @@ class _DiaryCardState extends State<DiaryCard>
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(
+                              _buildHighlightText(
                                 widget.diary.title,
                                 style: const TextStyle(
                                   fontSize: 16,
@@ -122,7 +124,6 @@ class _DiaryCardState extends State<DiaryCard>
                                   color: Colors.black87,
                                 ),
                                 maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
                               ),
                               const SizedBox(height: 4),
                               Text(
@@ -155,7 +156,7 @@ class _DiaryCardState extends State<DiaryCard>
                     const SizedBox(height: 12),
 
                     // 内容
-                    Text(
+                    _buildHighlightText(
                       widget.diary.content,
                       style: TextStyle(
                         fontSize: 14,
@@ -163,9 +164,6 @@ class _DiaryCardState extends State<DiaryCard>
                         height: 1.5,
                       ),
                       maxLines: widget.showFullContent ? null : 3,
-                      overflow: widget.showFullContent
-                          ? null
-                          : TextOverflow.ellipsis,
                     ),
 
                     const SizedBox(height: 16),
@@ -179,7 +177,10 @@ class _DiaryCardState extends State<DiaryCard>
                             spacing: 8,
                             runSpacing: 4,
                             children: widget.diary.tags.map((tagName) {
-                              return _StringTagChip(tagName: tagName);
+                              return _StringTagChip(
+                                tagName: tagName,
+                                highlightKeyword: widget.highlightKeyword,
+                              );
                             }).toList(),
                           ),
                         ),
@@ -249,6 +250,72 @@ class _DiaryCardState extends State<DiaryCard>
   static String _getWeekdayString(DateTime date) {
     final weekdays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
     return weekdays[date.weekday % 7];
+  }
+
+  /// 构建支持高亮的文本
+  Widget _buildHighlightText(
+    String text, {
+    required TextStyle style,
+    int? maxLines,
+  }) {
+    if (widget.highlightKeyword?.isEmpty != false) {
+      return Text(
+        text,
+        style: style,
+        maxLines: maxLines,
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+
+    final keyword = widget.highlightKeyword!.toLowerCase();
+    final textLower = text.toLowerCase();
+
+    if (!textLower.contains(keyword)) {
+      return Text(
+        text,
+        style: style,
+        maxLines: maxLines,
+        overflow: TextOverflow.ellipsis,
+      );
+    }
+
+    final spans = <TextSpan>[];
+    int start = 0;
+
+    while (true) {
+      final index = textLower.indexOf(keyword, start);
+      if (index == -1) {
+        // 添加剩余的文本
+        if (start < text.length) {
+          spans.add(TextSpan(text: text.substring(start)));
+        }
+        break;
+      }
+
+      // 添加关键词前的文本
+      if (index > start) {
+        spans.add(TextSpan(text: text.substring(start, index)));
+      }
+
+      // 添加高亮的关键词
+      spans.add(
+        TextSpan(
+          text: text.substring(index, index + keyword.length),
+          style: style.copyWith(
+            backgroundColor: Colors.yellow.withValues(alpha: 0.3),
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      );
+
+      start = index + keyword.length;
+    }
+
+    return RichText(
+      text: TextSpan(style: style, children: spans),
+      maxLines: maxLines,
+      overflow: TextOverflow.ellipsis,
+    );
   }
 }
 
@@ -368,8 +435,9 @@ class DiaryCardSkeleton extends StatelessWidget {
 /// 用于展示字符串类型的标签
 class _StringTagChip extends StatelessWidget {
   final String tagName;
+  final String? highlightKeyword;
 
-  const _StringTagChip({required this.tagName});
+  const _StringTagChip({required this.tagName, this.highlightKeyword});
 
   @override
   Widget build(BuildContext context) {
@@ -388,19 +456,31 @@ class _StringTagChip extends StatelessWidget {
     final colorIndex = tagName.hashCode.abs() % colors.length;
     final color = colors[colorIndex];
 
+    // 检查是否需要高亮
+    final isHighlighted =
+        highlightKeyword?.isNotEmpty == true &&
+        tagName.toLowerCase().contains(highlightKeyword!.toLowerCase());
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: isHighlighted
+            ? color.withValues(alpha: 0.2)
+            : color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.3), width: 1),
+        border: Border.all(
+          color: isHighlighted
+              ? color.withValues(alpha: 0.6)
+              : color.withValues(alpha: 0.3),
+          width: isHighlighted ? 2 : 1,
+        ),
       ),
       child: Text(
         tagName,
         style: TextStyle(
           color: color,
           fontSize: 12,
-          fontWeight: FontWeight.w500,
+          fontWeight: isHighlighted ? FontWeight.w600 : FontWeight.w500,
         ),
       ),
     );

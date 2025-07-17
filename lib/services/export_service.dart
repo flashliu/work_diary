@@ -7,7 +7,6 @@ import 'package:excel/excel.dart';
 import '../models/diary_entry.dart';
 import '../constants/app_constants.dart';
 import '../utils/date_utils.dart' as app_date_utils;
-import 'file_share_service.dart';
 
 /// 导出服务类
 /// 提供PDF、Excel等格式的导出功能
@@ -17,69 +16,7 @@ class ExportService {
   factory ExportService() => _instance;
   ExportService._internal();
 
-  /// 导出日记到文件并处理后续操作
-  ///
-  /// [entries] 要导出的日记列表
-  /// [format] 导出格式
-  /// [options] 导出选项
-  /// [shareOptions] 分享选项
-  /// [onProgress] 进度回调
-  Future<FileOperationResult> exportAndShare({
-    required List<DiaryEntry> entries,
-    required ExportFormat format,
-    required ExportOptions options,
-    ShareOptions shareOptions = const ShareOptions(),
-    Function(double progress, String message)? onProgress,
-  }) async {
-    try {
-      // 执行导出
-      final filePath = await exportDiaries(
-        entries: entries,
-        format: format,
-        options: options,
-        onProgress: onProgress,
-      );
-
-      final fileService = FileShareService();
-      String? finalPath = filePath;
-
-      // 保存到设备
-      if (shareOptions.saveToDevice) {
-        onProgress?.call(0.9, '正在保存文件...');
-        finalPath = await fileService.saveFileToDevice(filePath);
-      }
-
-      // 执行其他操作
-      if (shareOptions.shareViaSystem) {
-        await fileService.shareFile(
-          finalPath,
-          subject: shareOptions.customSubject ?? '工作日记导出',
-          text: shareOptions.customText ?? '分享我的工作日记',
-        );
-      }
-
-      if (shareOptions.copyPath) {
-        await fileService.copyPathToClipboard(finalPath);
-      }
-
-      if (shareOptions.openDirectory) {
-        await fileService.openFileDirectory(finalPath);
-      }
-
-      onProgress?.call(1.0, '操作完成');
-
-      return FileOperationResult.success(
-        filePath: finalPath,
-        message: '导出成功！文件已保存到：$finalPath',
-      );
-    } catch (e) {
-      return FileOperationResult.failure(
-        message: '导出失败：${e.toString()}',
-        error: e is Exception ? e : Exception(e.toString()),
-      );
-    }
-  }
-
+  /// 导出日记到文件
   ///
   /// [entries] 要导出的日记列表
   /// [format] 导出格式
@@ -108,10 +45,6 @@ class ExportService {
           return await _exportToWord(entries, filePath, options, onProgress);
         case ExportFormat.excel:
           return await _exportToExcel(entries, filePath, options, onProgress);
-        case ExportFormat.json:
-          return await _exportToJson(entries, filePath, options, onProgress);
-        default:
-          throw Exception('不支持的导出格式: $format');
       }
     } catch (e) {
       debugPrint('Export error: $e');
@@ -155,16 +88,10 @@ class ExportService {
     String extension;
     switch (format) {
       case ExportFormat.word:
-        extension = 'rtf'; // 使用RTF格式，Word可以直接打开
+        extension = 'docx'; // 使用DOCX格式
         break;
       case ExportFormat.excel:
         extension = 'xlsx';
-        break;
-      case ExportFormat.json:
-        extension = 'json';
-        break;
-      default:
-        extension = 'txt';
         break;
     }
 
@@ -180,14 +107,15 @@ class ExportService {
   ) async {
     onProgress?.call(0.1, '正在准备Word文档...');
 
-    // 生成Rich Text Format (RTF) 格式，可以被Word正确读取
-    final rtfContent = _generateRtfContent(entries, options);
+    // 生成HTML格式的内容，保存为.docx扩展名
+    // 这样大多数文字处理程序都可以打开
+    final htmlContent = _generateHtmlContent(entries, options);
 
     onProgress?.call(0.5, '正在生成文档内容...');
 
-    // 将文件保存为.rtf格式，Word可以直接打开
+    // 将文件保存为.docx格式
     final file = File(filePath);
-    await file.writeAsString(rtfContent, encoding: utf8);
+    await file.writeAsString(htmlContent, encoding: utf8);
 
     onProgress?.call(1.0, '导出完成');
     return file.path;
@@ -322,23 +250,50 @@ class ExportService {
     return file.path;
   }
 
-  /// 生成RTF内容（Rich Text Format，Word可以直接打开）
-  String _generateRtfContent(List<DiaryEntry> entries, ExportOptions options) {
+  /// 生成HTML格式的内容（以.docx扩展名保存，便于Word打开）
+  String _generateHtmlContent(List<DiaryEntry> entries, ExportOptions options) {
     final buffer = StringBuffer();
 
-    // RTF头部
+    // HTML头部
+    buffer.writeln('<!DOCTYPE html>');
+    buffer.writeln('<html>');
+    buffer.writeln('<head>');
+    buffer.writeln('<meta charset="UTF-8">');
+    buffer.writeln('<title>工作日记导出</title>');
+    buffer.writeln('<style>');
     buffer.writeln(
-      r'{\rtf1\ansi\deff0 {\fonttbl\f0\fswiss Helvetica;}\f0\fs24',
+      'body { font-family: "Microsoft YaHei", Arial, sans-serif; margin: 40px; line-height: 1.6; }',
     );
+    buffer.writeln(
+      'h1 { color: #333; text-align: center; font-size: 24px; margin-bottom: 30px; }',
+    );
+    buffer.writeln(
+      'h2 { color: #666; font-size: 18px; margin-top: 30px; margin-bottom: 10px; }',
+    );
+    buffer.writeln('p { margin: 8px 0; }');
+    buffer.writeln(
+      '.meta { color: #999; font-style: italic; font-size: 12px; }',
+    );
+    buffer.writeln('.content { margin: 15px 0; }');
+    buffer.writeln('.tags { color: #666; font-style: italic; }');
+    buffer.writeln('.notes { color: #666; font-style: italic; }');
+    buffer.writeln(
+      '.separator { border-bottom: 1px solid #ddd; margin: 20px 0; }',
+    );
+    buffer.writeln('.cover-info { text-align: center; margin-bottom: 30px; }');
+    buffer.writeln('</style>');
+    buffer.writeln('</head>');
+    buffer.writeln('<body>');
 
-    // 标题
+    // 封面信息
     if (options.includeCoverPage) {
-      buffer.writeln(r'\fs36\b 工作日记导出\b0\fs24\par');
+      buffer.writeln('<h1>工作日记导出</h1>');
+      buffer.writeln('<div class="cover-info">');
       buffer.writeln(
-        '导出时间：${app_date_utils.DateUtils.formatDateTime(DateTime.now())}\\par',
+        '<p>导出时间：${app_date_utils.DateUtils.formatDateTime(DateTime.now())}</p>',
       );
-      buffer.writeln('记录数量：${entries.length} 条\\par');
-      buffer.writeln('\\par');
+      buffer.writeln('<p>记录数量：${entries.length} 条</p>');
+      buffer.writeln('</div>');
     }
 
     // 日记内容
@@ -346,126 +301,71 @@ class ExportService {
       final entry = entries[i];
 
       // 标题
-      buffer.writeln('\\fs28\\b ${_escapeRtf(entry.title)}\\b0\\fs24\\par');
+      buffer.writeln('<h2>${_escapeHtml(entry.title)}</h2>');
 
       // 日期
       if (options.includeDate) {
         buffer.writeln(
-          '\\i 日期：${app_date_utils.DateUtils.formatDate(entry.date)}\\i0\\par',
+          '<p class="meta">日期：${app_date_utils.DateUtils.formatDate(entry.date)}</p>',
         );
       }
 
       // 内容
       if (options.includeContent) {
-        buffer.writeln('${_escapeRtf(entry.content)}\\par');
+        buffer.writeln('<div class="content">');
+        final contentLines = entry.content.split('\n');
+        for (final line in contentLines) {
+          buffer.writeln('<p>${_escapeHtml(line)}</p>');
+        }
+        buffer.writeln('</div>');
       }
 
       // 标签
       if (options.includeTags && entry.tags.isNotEmpty) {
-        buffer.writeln('\\i 标签：${_escapeRtf(entry.tags.join(', '))}\\i0\\par');
+        buffer.writeln(
+          '<p class="tags">标签：${_escapeHtml(entry.tags.join(', '))}</p>',
+        );
       }
 
       // 备注
       if (options.includeNotes && entry.notes?.isNotEmpty == true) {
-        buffer.writeln('\\i 备注：${_escapeRtf(entry.notes!)}\\i0\\par');
+        buffer.writeln('<p class="notes">备注：${_escapeHtml(entry.notes!)}</p>');
       }
 
       // 时间信息
       if (options.includeCreatedAt) {
         buffer.writeln(
-          '\\fs20 创建时间：${app_date_utils.DateUtils.formatDateTime(entry.createdAt)}\\fs24\\par',
+          '<p class="meta">创建时间：${app_date_utils.DateUtils.formatDateTime(entry.createdAt)}</p>',
         );
       }
 
       if (options.includeUpdatedAt) {
         buffer.writeln(
-          '\\fs20 更新时间：${app_date_utils.DateUtils.formatDateTime(entry.updatedAt)}\\fs24\\par',
+          '<p class="meta">更新时间：${app_date_utils.DateUtils.formatDateTime(entry.updatedAt)}</p>',
         );
       }
 
       // 分隔线
       if (i < entries.length - 1) {
-        buffer.writeln('\\par\\line\\par');
+        buffer.writeln('<div class="separator"></div>');
       }
     }
 
-    // RTF结尾
-    buffer.writeln('}');
+    // HTML结尾
+    buffer.writeln('</body>');
+    buffer.writeln('</html>');
 
     return buffer.toString();
   }
 
-  /// 转义RTF特殊字符
-  String _escapeRtf(String text) {
+  /// 转义HTML特殊字符
+  String _escapeHtml(String text) {
     return text
-        .replaceAll('\\', '\\\\')
-        .replaceAll('{', '\\{')
-        .replaceAll('}', '\\}')
-        .replaceAll('\n', '\\par ');
-  }
-
-  /// 导出为JSON格式
-  Future<String> _exportToJson(
-    List<DiaryEntry> entries,
-    String filePath,
-    ExportOptions options,
-    Function(double, String)? onProgress,
-  ) async {
-    onProgress?.call(0.1, '正在准备JSON数据...');
-
-    final jsonData = {
-      'exportTime': DateTime.now().toIso8601String(),
-      'totalEntries': entries.length,
-      'options': options.toJson(),
-      'entries': entries.map((entry) => _entryToJson(entry, options)).toList(),
-    };
-
-    onProgress?.call(0.5, '正在生成JSON文件...');
-
-    final file = File(filePath);
-    await file.writeAsString(_formatJson(jsonData));
-
-    onProgress?.call(1.0, '导出完成');
-    return file.path;
-  }
-
-  /// 将日记条目转换为JSON
-  Map<String, dynamic> _entryToJson(DiaryEntry entry, ExportOptions options) {
-    final json = <String, dynamic>{};
-
-    if (options.includeDate) {
-      json['date'] = entry.date.toIso8601String();
-    }
-
-    json['title'] = entry.title;
-
-    if (options.includeContent) {
-      json['content'] = entry.content;
-    }
-
-    if (options.includeTags) {
-      json['tags'] = entry.tags;
-    }
-
-    if (options.includeCreatedAt) {
-      json['createdAt'] = entry.createdAt.toIso8601String();
-    }
-
-    if (options.includeUpdatedAt) {
-      json['updatedAt'] = entry.updatedAt.toIso8601String();
-    }
-
-    return json;
-  }
-
-  /// 格式化JSON
-  String _formatJson(Map<String, dynamic> data) {
-    // 简单的JSON格式化
-    return data
-        .toString()
-        .replaceAll(', ', ',\n  ')
-        .replaceAll('{', '{\n  ')
-        .replaceAll('}', '\n}');
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
   }
 }
 
@@ -508,5 +408,32 @@ class ExportOptions {
       'sortOrder': sortOrder.name,
       'pageSize': pageSize,
     };
+  }
+}
+
+/// 文件操作结果
+class FileOperationResult {
+  final bool success;
+  final String? filePath;
+  final String? message;
+  final Exception? error;
+
+  const FileOperationResult({
+    required this.success,
+    this.filePath,
+    this.message,
+    this.error,
+  });
+
+  factory FileOperationResult.success({String? filePath, String? message}) {
+    return FileOperationResult(
+      success: true,
+      filePath: filePath,
+      message: message,
+    );
+  }
+
+  factory FileOperationResult.failure({String? message, Exception? error}) {
+    return FileOperationResult(success: false, message: message, error: error);
   }
 }

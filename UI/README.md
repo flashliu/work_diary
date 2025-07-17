@@ -66,14 +66,7 @@
 - 趋势图表
 - 时间分析
 
-### 7. 我的 (profile.html)
-
-- 个人信息展示
-- 本地数据管理
-- 界面设置选项
-- 帮助和支持
-
-### 8. 总览页面 (index.html)
+### 7. 总览页面 (index.html)
 
 - 所有页面预览
 - 手机外壳模拟
@@ -106,7 +99,6 @@
    - `export.html` - 导出功能
    - `calendar.html` - 日历视图
    - `statistics.html` - 统计分析
-   - `profile.html` - 我的
 
 ## 设计理念
 

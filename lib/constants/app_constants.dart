@@ -46,7 +46,6 @@ class AppConstants {
   static const String calendarTitle = '日历';
   static const String statisticsTitle = '统计';
   static const String exportTitle = '导出';
-  static const String profileTitle = '个人中心';
   static const String settingsTitle = '设置';
   static const String tagsTitle = '标签管理';
 

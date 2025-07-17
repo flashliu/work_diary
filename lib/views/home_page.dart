@@ -14,7 +14,6 @@ import 'add_diary_page.dart';
 import 'diary_detail_page.dart';
 import 'calendar_page.dart';
 import 'statistics_page.dart';
-import 'profile_page.dart';
 import 'export_page.dart';
 import 'search_page.dart';
 
@@ -34,7 +33,7 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
 
     // 初始化数据
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -54,12 +53,7 @@ class _HomePageState extends State<HomePage>
     return Scaffold(
       body: IndexedStack(
         index: _currentIndex,
-        children: const [
-          _HomeContent(),
-          CalendarPage(),
-          StatisticsPage(),
-          ProfilePage(),
-        ],
+        children: const [_HomeContent(), CalendarPage(), StatisticsPage()],
       ),
       bottomNavigationBar: _buildBottomNavigationBar(),
       floatingActionButton: _currentIndex == 0
@@ -97,7 +91,6 @@ class _HomePageState extends State<HomePage>
             label: '日历',
           ),
           BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: '统计'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: '我的'),
         ],
       ),
     );

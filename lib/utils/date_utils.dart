@@ -59,6 +59,12 @@ class DateUtils {
     return _displayYearFormat.format(date);
   }
 
+  /// 自定义格式化日期
+  static String formatCustom(DateTime date, String pattern) {
+    final formatter = DateFormat(pattern);
+    return formatter.format(date);
+  }
+
   /// 格式化星期几 (星期一)
   static String formatWeekday(DateTime date) {
     return _getWeekdayString(date);

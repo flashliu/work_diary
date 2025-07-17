@@ -307,6 +307,21 @@ class DiaryProvider extends ChangeNotifier {
     };
   }
 
+  /// 获取本月的日记列表
+  List<DiaryEntry> getEntriesThisMonth() {
+    final now = DateTime.now();
+    return getEntriesByMonth(now.year, now.month);
+  }
+
+  /// 获取上月的日记列表
+  List<DiaryEntry> getEntriesLastMonth() {
+    final now = DateTime.now();
+    return getEntriesByMonth(
+      now.month == 1 ? now.year - 1 : now.year,
+      now.month == 1 ? 12 : now.month - 1,
+    );
+  }
+
   /// 设置加载状态
   void _setLoading(bool loading) {
     _isLoading = loading;

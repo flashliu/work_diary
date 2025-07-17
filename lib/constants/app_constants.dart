@@ -368,3 +368,15 @@ class AppConfig {
   static const int maxTitleLength = 100;
   static const int maxContentLength = 5000;
 }
+
+/// 导出格式枚举
+enum ExportFormat { word, excel, pdf, json }
+
+/// 日期范围枚举
+enum DateRange { all, thisMonth, lastMonth, thisWeek, lastWeek, custom }
+
+/// 排序方式枚举
+enum SortOrder { newest, oldest }
+
+/// 导出状态枚举
+enum ExportStatus { idle, preparing, exporting, completed, error }

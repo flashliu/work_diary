@@ -13,6 +13,7 @@ import 'calendar_page.dart';
 import 'statistics_page.dart';
 import 'profile_page.dart';
 import 'export_page.dart';
+import 'search_page.dart';
 
 /// 首页 - 日记列表展示
 class HomePage extends StatefulWidget {
@@ -483,7 +484,10 @@ class _HomeContent extends StatelessWidget {
   }
 
   void _showSearch(BuildContext context) {
-    showSearch(context: context, delegate: DiarySearchDelegate());
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SearchPage()),
+    );
   }
 
   void _navigateToExportPage(BuildContext context) {
